@@ -62,6 +62,8 @@ Defined in `src/routes/index.tsx`.
 | `/register` | `RegisterPage` | `src/pages/register/RegisterPage.tsx` | public |
 | `/app` | `DashboardPage` | `src/pages/dashboard/DashboardPage.tsx` | protected |
 | `/app/:id` | `ServerPage` | `src/pages/dashboard/ServerPage.tsx` | protected |
+| `/admin` | `AdminPage` (Dashboard tab) | `src/pages/admin/AdminPage.tsx` | public (demo) |
+| `/admin/:current` | `AdminPage` (tab from param) | `src/pages/admin/AdminPage.tsx` | public (demo) |
 | `*` | `NotFoundPage` | `src/pages/NotFoundPage.tsx` | public |
 
 ## 4. Folder layout
@@ -90,6 +92,10 @@ src/
 │   │   ├── ServerPage.tsx
 │   │   └── components/       # ServerList.tsx, ServerCard.tsx,
 │   │                         # ConsoleViewer.tsx, ServerStatus.tsx
+│   ├── admin/                # owner: main-page dev (demo, mock data)
+│   │   ├── AdminPage.tsx     # tab switcher; imports MOCK_DASHBOARD (TEMPORARY)
+│   │   ├── adminTabs.ts      # tab registry: dashboard + 6 coming-soon tabs
+│   │   └── components/       # AdminLayout.tsx, DashboardTab.tsx, ComingSoon.tsx
 │   └── NotFoundPage.tsx
 │
 ├── components/               # shared — used across pages
@@ -101,14 +107,17 @@ src/
 │   │   ├── client.ts         # base fetch: URL, auth header, error shape  (shared)
 │   │   ├── auth.ts           # login/register/logout/session             (auth dev)
 │   │   └── servers.ts        # list/create/start/stop/console            (main-page dev)
-│   └── auth/
-│       ├── AuthContext.tsx   # provider + useAuth hook                   (auth dev)
-│       └── ProtectedRoute.tsx# redirect guard                            (auth dev)
+│   ├── auth/
+│   │   ├── AuthContext.tsx   # provider + useAuth hook                   (auth dev)
+│   │   └── ProtectedRoute.tsx# redirect guard                            (auth dev)
+│   └── mock/
+│       └── admin.ts          # MOCK_DASHBOARD — TEMPORARY, delete when API exists
 │
 ├── hooks/                    # useServers.ts, usePolling.ts ...
 ├── types/
 │   ├── auth.ts               # User, LoginRequest, Session               (auth dev)
-│   └── server.ts             # Server, ServerStatus, ConsoleLine          (main-page dev)
+│   ├── server.ts             # Server, ServerStatus, ConsoleLine          (main-page dev)
+│   └── admin.ts              # AdminDashboardData, ServerStats, MetricPoint
 └── assets/
 ```
 
@@ -150,7 +159,21 @@ export type AuthState = {
   register: (req: RegisterRequest) => Promise<void>
   logout: () => void
 }
+
+// types/admin.ts — admin dashboard (demo). Shapes satisfied by MOCK_DASHBOARD
+// now and by the real API later; components never import mock data directly.
+export type MetricPoint = { label: string; value: number; value2?: number }
+export type ServerStats = { playersOnline: number; playersMax: number; tps: number; msPerTick: number; cpuLoad: number; ramUsed: number; ramMax: number; diskUsed: number; diskMax: number; uptime: string; version: string; status: "online" | "offline" | "starting" | "stopping" }
+export type AdminDashboardData = { stats: ServerStats; playersSeries: MetricPoint[]; tpsSeries: MetricPoint[]; loadSeries: MetricPoint[]; memoryBreakdown: { name: string; value: number; color: string }[] }
 ```
+
+## 5a. Temporary (mock) data
+
+The `/admin` dashboard is a **demo** and runs on placeholder data. All mock
+values are quarantined in `src/lib/mock/admin.ts` and imported in exactly one
+place (`src/pages/admin/AdminPage.tsx`, marked `// TEMPORARY DATA`). Components
+consume only `src/types/admin.ts` shapes, so connecting the real backend is a
+one-import swap per page. Full policy + removal recipe: `docs/TEMPORARY_DATA.md`.
 
 ## 6. API layer
 

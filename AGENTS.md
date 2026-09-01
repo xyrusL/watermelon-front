@@ -16,7 +16,8 @@ Full page flow and architecture: `docs/PROJECT_FLOW.md` — read it before struc
 
 - Vite + React 19 + TypeScript (strict) — main language is always TypeScript
 - Tailwind CSS v4 via `@tailwindcss/vite` (CSS-first config in `src/index.css` `@theme`; do NOT create `tailwind.config.js`)
-- React Router for pages (`/`, `/login`, `/register`, `/app`, `/app/:id`)
+- React Router for pages (`/`, `/login`, `/register`, `/app`, `/app/:id`, `/admin`, `/admin/:tab`)
+- Recharts for admin dashboard charts
 - npm as package manager (`package-lock.json` is committed)
 
 ## Coding rules
@@ -34,6 +35,7 @@ Full page flow and architecture: `docs/PROJECT_FLOW.md` — read it before struc
 5. **Small files.** Prefer many focused files over large ones. A page file is composition; sections and widgets are separate components.
 6. **Styling.** Tailwind utility classes only. Custom design tokens via `@theme` in `index.css`. No CSS modules, no styled-components, no inline `style` unless dynamic.
 7. **No speculative abstractions.** Handle the concrete requirement; do not build generic systems for hypothetical future needs.
+8. **Temporary data is quarantined.** Demo/mock data lives ONLY in `src/lib/mock/` and is imported ONLY at page roots, marked `// TEMPORARY DATA`. Components use types from `src/types/` and never import mock data. Full rules and the removal recipe: `docs/TEMPORARY_DATA.md`.
 
 ## Commands — permissions
 
