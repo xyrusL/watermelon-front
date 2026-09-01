@@ -1,0 +1,21 @@
+@import "tailwindcss";
+
+@theme {
+  --color-rind: #1f7a3d;
+  --color-rind-dark: #14532d;
+  --color-flesh: #ef4444;
+  --color-flesh-light: #fca5a5;
+  --color-seed: #1c1917;
+  --font-sans: system-ui, "Segoe UI", Roboto, sans-serif;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  margin: 0;
+  font-family: var(--font-sans);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
